@@ -1,7 +1,6 @@
 package com.zlcook.open.finance;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
@@ -12,7 +11,9 @@ import com.zlcook.open.finance.bean.Consume;
 import com.zlcook.open.finance.db.DBAdopter;
 import com.zlcook.open.finance.presenter.ConsumePresenter;
 
-
+/**
+ * 添加收支界面
+ */
 public class AddActivity extends AppCompatActivity {
     private EditText et_money;
     private EditText et_comment;
@@ -29,27 +30,42 @@ public class AddActivity extends AppCompatActivity {
         presenter = new ConsumePresenter(this);
     }
 
+    /**
+     * 点击支出选项
+     * @param v
+     */
     public  void zhichu(View v){
         flage = 0;
     }
 
+    /**
+     * 点击收入选项
+     * @param v
+     */
     public  void shouru(View v){
         flage = 1;
     }
 
+    /**
+     * 点击确定按钮
+     * @param v
+     */
     public void sure(View v) {
+        //获取填写的钱和备注
         String money = et_money.getText().toString().trim();
         String comment = et_comment.getText().toString().trim();
         try{
-            if (money.equals("") || comment.equals(""))
+            if (money.equals("") || comment.equals(""))//填写错误则提示
                 Toast.makeText(AddActivity.this, "请填写完整", Toast.LENGTH_SHORT).show();
             else {
+                // 将收支信息保存到数据库
                 Float f_money= Float.parseFloat(money);
                 Consume consume = new Consume(DBAdopter.USER.getId(),f_money,comment,flage);
                 if(presenter.add(consume)){
                     Toast.makeText(AddActivity.this, "添加成功", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(this, MainActivity.class);
                     startActivity(intent);
+                    finish();
                 }else{
                     Toast.makeText(AddActivity.this, "添加失败", Toast.LENGTH_SHORT).show();
                 }

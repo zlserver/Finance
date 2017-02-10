@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -15,7 +16,9 @@ import com.zlcook.open.finance.presenter.ConsumePresenter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-
+/**
+ * 某个收支条目的详细界面，可以返回、编辑、删除
+ */
 public class LookActivity extends AppCompatActivity {
     private TextView tv_money;
     private TextView tv_comment;
@@ -43,6 +46,9 @@ public class LookActivity extends AppCompatActivity {
         presenter = new ConsumePresenter(this);
     }
 
+    /**
+     * 显示条目详细内容
+     */
     public void onStart() {
         super.onStart();
         Intent intent = getIntent();
@@ -58,6 +64,10 @@ public class LookActivity extends AppCompatActivity {
         tv_time.setText(sdf.format(time));
     }
 
+    /**
+     * 点击删除记录按钮
+     * @param v
+     */
     public void delete(View v) {
         buildDialog();
     }
@@ -70,6 +80,8 @@ public class LookActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int whichButton) {
                 presenter.delete(id);
                 Toast.makeText(LookActivity.this, "删除成功", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(LookActivity.this, ListActivity.class);
+                startActivity(intent);
                 finish();
             }
         });
@@ -77,16 +89,31 @@ public class LookActivity extends AppCompatActivity {
         builder.show();
     }
 
+    /**
+     * 点击返回
+     * @param v
+     */
     public void back(View v) {
         Intent intent = new Intent(this, ListActivity.class);
         startActivity(intent);
         finish();
     }
-
+    //监听返回菜单退出事件
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        Intent intent = new Intent(this, ListActivity.class);
+        startActivity(intent);
+        finish();
+        return false;
+    }
+    /**
+     * 点击编辑按钮
+     * @param v
+     */
     public void edit(View v) {
         Intent intent = new Intent(this, EditActivity.class);
         intent.putExtra("id", id);
         startActivity(intent);
+        finish();
     }
 
 

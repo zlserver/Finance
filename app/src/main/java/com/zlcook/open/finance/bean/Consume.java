@@ -4,15 +4,16 @@ package com.zlcook.open.finance.bean;
 import java.util.Date;
 
 /**
+ * 收支类
  * Created by dell on 2016/12/31.
  */
 public class Consume {
     private int id;
     private int user_id;//用户id
-    private float money;
-    private String comment;
+    private float money;  //钱
+    private String comment;  //备注
     private int flage;//1收入；0支出
-    private  Date time;
+    private  Date time;  //时间
 
     public Consume(int user_id,float money, String comment, int flage) {
         this.user_id = user_id;

@@ -9,6 +9,9 @@ import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
 
+/**
+ * 登录后的主界面
+ */
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -18,19 +21,40 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * 查看收支按钮
+     * @param view
+     */
     public void search(View view){
         startActivity(new Intent(MainActivity.this, ListActivity.class));
 
         finish();
     }
+
+    /**
+     * 添加收支按钮
+     * @param view
+     */
     public void add(View view){
         startActivity(new Intent(MainActivity.this, AddActivity.class));
 
         finish();
     }
-    public void biao(View view){
 
+    /**
+     * 收支报表按钮
+     * @param view
+     */
+    public void biao(View view){
+        startActivity(new Intent(MainActivity.this, BiaoActivity.class));
+
+        finish();
     }
+
+    /**
+     * 设置按钮
+     * @param view
+     */
     public void set(View view){
         startActivity(new Intent(MainActivity.this, SetActivity.class));
 

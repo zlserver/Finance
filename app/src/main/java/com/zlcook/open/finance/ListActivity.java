@@ -28,6 +28,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * 查看收支界面
+ */
 public class ListActivity extends AppCompatActivity  {
     private ListView lv;
 
@@ -68,7 +71,9 @@ public class ListActivity extends AppCompatActivity  {
         //创建SimpleAdapter适配器将数据绑定到item显示控件上
         SimpleAdapter adapter = new SimpleAdapter(this, data, R.layout.listview, new String[]{"year_month","hour_mil","money","comment"}, new int[]{R.id.year_month,R.id.hour_mil,R.id.money,R.id.comment});
 
-
+        /**
+         * 点击某个条目，跳转到详细界面
+         */
         if (lv != null) {
             lv.setAdapter(adapter);
             //listView点击事件
@@ -90,6 +95,7 @@ public class ListActivity extends AppCompatActivity  {
                             Intent intent = new Intent(ListActivity.this, LookActivity.class);
                             intent.putExtra("id", value);//把id传递到下一个界面
                             startActivity(intent);
+                            finish();
                         }
                     }
                 }
@@ -97,13 +103,8 @@ public class ListActivity extends AppCompatActivity  {
         }
     }
 
-    public void add(View v) {
-        Intent intent = new Intent(this, AddActivity.class);
-        startActivity(intent);
-    }
 
-
-    //监听返回键退出事件
+    //监听返回菜单键退出事件
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);

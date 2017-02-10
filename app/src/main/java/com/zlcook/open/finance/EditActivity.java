@@ -14,6 +14,9 @@ import com.zlcook.open.finance.presenter.ConsumePresenter;
 import java.util.Date;
 
 
+/**
+ * 编辑收支条目
+ */
 public class EditActivity extends AppCompatActivity {
     private EditText et_money;
     private EditText et_comment;
@@ -70,6 +73,7 @@ public class EditActivity extends AppCompatActivity {
                     Toast.makeText(EditActivity.this, "修改成功", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(this, ListActivity.class);
                     startActivity(intent);
+                    finish();
                 }else{
                     Toast.makeText(EditActivity.this, "修改失败", Toast.LENGTH_SHORT).show();
                 }

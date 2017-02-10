@@ -13,6 +13,9 @@ import com.zlcook.open.finance.bean.User;
 import com.zlcook.open.finance.db.DBAdopter;
 import com.zlcook.open.finance.presenter.UserPresenter;
 
+/**
+ * 系统设置界面
+ */
 public class SetActivity extends AppCompatActivity {
 
     private EditText et_password,et_password2;
@@ -26,7 +29,10 @@ public class SetActivity extends AppCompatActivity {
         userPresenter = new UserPresenter(this);
     }
 
-
+    /**
+     * 确定按钮
+     * @param v
+     */
     public void sure(View v) {
         String p1 = et_password.getText().toString().trim();
         String p2 = et_password2.getText().toString().trim();

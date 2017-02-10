@@ -10,6 +10,7 @@ import java.util.ArrayList;
 
 
 /**
+ * 用户数据操作类
  * Created by dell on 2016/12/31.
  */
 public class UserPresenter {

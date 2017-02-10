@@ -16,10 +16,11 @@ import java.util.ArrayList;
 import java.util.Date;
 
 /**
+ * 数据库操作类
  * Created by Administrator on 2016/7/15.
  */
 public class DBAdopter implements Serializable {
-
+   //用户表
     public  static User USER;
     //数据库基本信息
     private static final String DB_NAME="myfinance.db";//数据库名
@@ -32,7 +33,7 @@ public class DBAdopter implements Serializable {
     private static final String USER_USERNAME ="username";
     private static final String USER_PASSWORD ="password";
 
-    //消费表基本信息
+    //收支表基本信息
     private static final String CONSUME_ID ="id";//图书表的所有列名
     private static final String CONSUME_USER_ID ="user_id"; //消费者id
     private static final String CONSUME_MOENY ="money"; //消费额
@@ -96,7 +97,7 @@ public class DBAdopter implements Serializable {
         return db.update(USER_TABLE,updateValues,USER_ID+" like ? ",new String[]{id});
     }
 
-    private ArrayList<User> ConvertToStudent(Cursor cursor){//将指针类型转换为Student数组
+    private ArrayList<User> ConvertToStudent(Cursor cursor){//将指针类型转换为User数组
         int resultConts=cursor.getCount();
         ArrayList<User> peoples=new ArrayList<User>();
         if(resultConts==0||!cursor.moveToFirst())return null;
@@ -115,7 +116,7 @@ public class DBAdopter implements Serializable {
         }
     }
 
-    public User getUser(String username){//查找，按学号精确查找
+    public User getUser(String username){//查找，按用户名精确查找
         Cursor cursor=db.query(USER_TABLE,new String[]{USER_ID, USER_USERNAME, USER_PASSWORD},USER_USERNAME+" = ? ",new String[]{username} ,null,null,null,null);
         if(cursor.getCount()==0||!cursor.moveToFirst())
             return null;
@@ -134,9 +135,9 @@ public class DBAdopter implements Serializable {
             return list.get(0);
         return null;
     }
-//-------------------------数据库消费表操作----------------------------------
+//-------------------------数据库收支表操作----------------------------------
 
-    public long consume_insert(Consume consume)//插入一笔消费
+    public long consume_insert(Consume consume)//插入一笔收支
     {
         ContentValues newValues=new ContentValues();
         newValues.put(CONSUME_COMMENT,consume.getComment());
@@ -147,7 +148,7 @@ public class DBAdopter implements Serializable {
         return db.insert(CONSUME_TABLE,null,newValues);
     }
 
-    public long consume_delete(String no)//删除一笔消费
+    public long consume_delete(String no)//删除一笔收支
     {
         return db.delete(CONSUME_TABLE, CONSUME_ID +" like ? ",new String[]{no});
     }
@@ -203,6 +204,25 @@ public class DBAdopter implements Serializable {
         if(list !=null && list.size()==1)
             return list.get(0);
         return null;
+    }
+
+    /**
+     * 根据用户id和年月查询当月收入数据
+     * @param userid  用户id
+     * @param year_month  年月信息
+     * @param flage  1收入；0支出
+     * @return
+     */
+    public float consume_getMoneyForMonth(String userid,String year_month,String flage){
+        Cursor cursor=db.query(CONSUME_TABLE,new String[]{CONSUME_ID,CONSUME_USER_ID,CONSUME_MOENY,CONSUME_COMMENT,CONSUME_FLAGE,CONSUME_TIME},CONSUME_USER_ID +" like ? and "+CONSUME_FLAGE+" like ?  and "+CONSUME_TIME+" like ?",new String[]{userid,flage,year_month+"%"} ,null,null,null,null);
+        if(cursor.getCount()==0||!cursor.moveToFirst())
+            return 0;
+        ArrayList<Consume> list = ConvertToConsume(cursor);
+        float money =0;
+        for( Consume c : list){
+            money+=c.getMoney();
+        }
+        return money;
     }
     public ArrayList<Consume> getConsumes(String userid){//查找
         Cursor cursor=db.query(CONSUME_TABLE,new String[]{CONSUME_ID,CONSUME_USER_ID,CONSUME_MOENY,CONSUME_COMMENT,CONSUME_FLAGE,CONSUME_TIME},CONSUME_USER_ID +" like ? ",new String[]{userid} ,null,null,null,null);

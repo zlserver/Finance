@@ -1,6 +1,7 @@
 package com.zlcook.open.finance.bean;
 
 /**
+ * 用户类
  * Created by dell on 2016/12/31.
  */
 public class User {
