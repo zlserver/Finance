@@ -1,6 +1,8 @@
 package com.zlcook.open.finance;
 
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -12,9 +14,11 @@ import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.DatePicker;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.SimpleAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.zlcook.open.finance.bean.Consume;
@@ -23,6 +27,7 @@ import com.zlcook.open.finance.presenter.ConsumePresenter;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -33,13 +38,23 @@ import java.util.Set;
  */
 public class ListActivity extends AppCompatActivity  {
     private ListView lv;
+    int mYear, mMonth, mDay;
+    TextView tv_start,tv_end;
+    final int DATE_DIALOG = 1;
 
+    boolean time_flage = true;//true:设置开始时间，false:设置结束时间
     private ConsumePresenter presenter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
+        tv_start = (TextView) findViewById(R.id.ed_start);
+        tv_end = (TextView) findViewById(R.id.ed_end);
         presenter = new ConsumePresenter(this);
+        final Calendar ca = Calendar.getInstance();
+        mYear = ca.get(Calendar.YEAR);
+        mMonth = ca.get(Calendar.MONTH);
+        mDay = ca.get(Calendar.DAY_OF_MONTH);
     }
 
     /**
@@ -48,14 +63,19 @@ public class ListActivity extends AppCompatActivity  {
     @Override
     public void onStart() {
         super.onStart();
+
+        ArrayList<Consume> consumes =presenter.getConsumes(DBAdopter.USER.getId());
+        refresh(consumes);
+    }
+
+    public void refresh(ArrayList<Consume> consumes){
         lv = (ListView) findViewById(R.id.listView);
         lv.setTextFilterEnabled(true);//设置lv可以被过虑
 
         final List<HashMap<String, Object>> data = new ArrayList<HashMap<String, Object>>();
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         SimpleDateFormat hmsdf =new SimpleDateFormat("HH:mm");
-        ArrayList<Consume> consumes =presenter.getConsumes(DBAdopter.USER.getId());
         if (consumes != null)
             for (int i = 0; i < consumes.size(); i++) {
                 HashMap<String, Object> item = new HashMap<String, Object>();
@@ -102,8 +122,76 @@ public class ListActivity extends AppCompatActivity  {
             });
         }
     }
+    /**
+     * 开始时间
+     * @param v
+     */
+    public void startTime(View v) {
+        time_flage=true;
+        showDialog(DATE_DIALOG);
+    }
+
+    /**
+     * 结束时间
+     * @param v
+     */
+    public void endTime(View v) {
+        time_flage=false;
+        showDialog(DATE_DIALOG);
+    }
+    /**
+     * 搜索
+     * @param v
+     */
+    public void sousu(View v) {
+
+        String startTime = tv_start.getText().toString();
+        String endTime = tv_end.getText().toString();
+       // Toast.makeText(this,startTime+" : "+endTime,Toast.LENGTH_LONG).show();
+       // startTime+=" 00:00:00";
+       // endTime+=" 00:00:00";
+        ArrayList<Consume> consumes =presenter.getConsumes(DBAdopter.USER.getId(),startTime,endTime);
 
 
+        refresh(consumes);
+    }
+    @Override
+    protected Dialog onCreateDialog(int id) {
+        switch (id) {
+            case DATE_DIALOG:
+                return new DatePickerDialog(this, mdateListener, mYear, mMonth, mDay);
+        }
+        return null;
+    }
+
+    private DatePickerDialog.OnDateSetListener mdateListener = new DatePickerDialog.OnDateSetListener() {
+
+        @Override
+        public void onDateSet(DatePicker view, int year, int monthOfYear,
+                              int dayOfMonth) {
+            mYear = year;
+            mMonth = monthOfYear;
+            mDay = dayOfMonth;
+            setTextValue();
+        }
+    };
+    /**
+     * 设置日期 利用StringBuffer追加
+     */
+    public void setTextValue() {
+
+        String time= dataStr(mYear,mMonth,mDay);
+        if( time_flage )
+            tv_start.setText(time);
+        else
+            tv_end.setText(time);
+    }
+
+    public String dataStr(int year,int month,int day){
+        StringBuffer sb = new StringBuffer().append(year).append("-").append(month + 1).append("-").append(day);
+        String time= sb.toString();
+        return time;
+    }
     //监听返回菜单键退出事件
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         Intent intent = new Intent(this, MainActivity.class);

@@ -1,6 +1,7 @@
 package com.zlcook.open.finance.presenter;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.zlcook.open.finance.bean.Consume;
 import com.zlcook.open.finance.db.DBAdopter;
@@ -17,6 +18,7 @@ public class ConsumePresenter {
     public  ConsumePresenter(Context context){
         this.context= context;
     }
+
 
     /**
      * 添加收支
@@ -47,7 +49,21 @@ public class ConsumePresenter {
         dbAdopter.close();
         return list;
     }
+    /**
+     * 获取数据库中所有收支
+     * @param userid
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+    public  ArrayList<Consume> getConsumes(int userid,String startTime,String endTime){
+        DBAdopter dbAdopter = new DBAdopter(this.context);
+        dbAdopter.open();
+        ArrayList<Consume> list =dbAdopter.getConsumes(userid+"",startTime,endTime);
+        dbAdopter.close();
 
+        return list;
+    }
     /**
      * 更新收支记录
      * @param consume
@@ -112,6 +128,24 @@ public class ConsumePresenter {
      * @return 数组一共包含12个数据
      */
     public float[] getZhiMoney(int userid,String year){
+        DBAdopter dbAdopter = new DBAdopter(this.context);
+        dbAdopter.open();
+        float[] month_money= new float[12];
+        for( int i =1;i<=12;i++){
+            String year_month = year_month(year,i);
+            float  totalmoney =dbAdopter.consume_getMoneyForMonth(userid+"",year_month,0+"");
+            month_money[i-1]=totalmoney;
+        }
+        dbAdopter.close();
+        return month_money;
+    }
+
+    /**
+     * 根据年份信息获取12个月中支出数据
+     * @param year 年份
+     * @return 数组一共包含12个数据
+     */
+    public float[] getXiaoFenLeiMoney(int userid,String year){
         DBAdopter dbAdopter = new DBAdopter(this.context);
         dbAdopter.open();
         float[] month_money= new float[12];

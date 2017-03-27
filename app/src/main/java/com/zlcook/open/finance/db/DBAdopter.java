@@ -11,6 +11,7 @@ import com.zlcook.open.finance.bean.Consume;
 import com.zlcook.open.finance.bean.User;
 
 import java.io.Serializable;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -39,13 +40,15 @@ public class DBAdopter implements Serializable {
     private static final String CONSUME_MOENY ="money"; //消费额
     private static final String CONSUME_COMMENT="comment";//备注
     private static final String CONSUME_FLAGE="flage";//收支标志
+    private static final String CONSUME_TYPE="type";//收支类型
     private static final String CONSUME_TIME="time"; //时间
+    private static final String CONSUME_TIME_LONG="longmills"; //时间
 
     private SQLiteDatabase db;//
     private final Context context;//上下文对象，通常是this
     private  DBOpenHelper dbOpenHelper;//内部类类型
 
-    private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd mm:HH;ss");
+    private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 
         public DBAdopter(Context _context) {
@@ -144,7 +147,10 @@ public class DBAdopter implements Serializable {
         newValues.put(CONSUME_USER_ID,consume.getUser_id());
         newValues.put(CONSUME_MOENY,consume.getMoney());
         newValues.put(CONSUME_FLAGE,consume.getFlage());
+        newValues.put(CONSUME_TYPE,consume.getType());
         newValues.put(CONSUME_TIME,sdf.format(consume.getTime()));
+        long longmills = consume.getTime().getTime();
+        newValues.put(CONSUME_TIME_LONG,longmills);
         return db.insert(CONSUME_TABLE,null,newValues);
     }
 
@@ -160,6 +166,7 @@ public class DBAdopter implements Serializable {
         newValues.put(CONSUME_COMMENT,consume.getComment());
         newValues.put(CONSUME_MOENY,consume.getMoney());
         newValues.put(CONSUME_FLAGE,consume.getFlage());
+        newValues.put(CONSUME_TYPE,consume.getType());
         newValues.put(CONSUME_TIME,sdf.format(consume.getTime()));
 
         return db.update(CONSUME_TABLE,newValues, CONSUME_ID +" = ? ",new String[]{id});
@@ -178,6 +185,7 @@ public class DBAdopter implements Serializable {
                 String s3=cursor.getString(cursor.getColumnIndex(CONSUME_COMMENT));
                 String s4=cursor.getString(cursor.getColumnIndex(CONSUME_TIME));
                 String s5=cursor.getString(cursor.getColumnIndex(CONSUME_FLAGE));
+                String type=cursor.getString(cursor.getColumnIndex(CONSUME_TYPE));
                 String user_id=cursor.getString(cursor.getColumnIndex(CONSUME_USER_ID));
                 int id=Integer.parseInt(s1);
                 int flage = Integer.parseInt(s5);
@@ -186,6 +194,7 @@ public class DBAdopter implements Serializable {
                 try{
                     Date time =sdf.parse(s4);
                     Consume consume=new Consume(id,userid,money,s3,flage,time);
+                    consume.setType(type);
                     consumes.add(consume);
                 }catch (Exception e){
                     e.printStackTrace();
@@ -197,7 +206,7 @@ public class DBAdopter implements Serializable {
     }
 
     public Consume getConsume(String id){//查找，按id模糊查找
-        Cursor cursor=db.query(CONSUME_TABLE,new String[]{CONSUME_ID,CONSUME_USER_ID,CONSUME_MOENY,CONSUME_COMMENT,CONSUME_FLAGE,CONSUME_TIME}, CONSUME_ID +" like ? ",new String[]{id} ,null,null,null,null);
+        Cursor cursor=db.query(CONSUME_TABLE,new String[]{CONSUME_ID,CONSUME_USER_ID,CONSUME_MOENY,CONSUME_COMMENT,CONSUME_FLAGE,CONSUME_TYPE,CONSUME_TIME}, CONSUME_ID +" like ? ",new String[]{id} ,null,null,null,null);
         if(cursor.getCount()==0||!cursor.moveToFirst())
             return null;
         ArrayList<Consume> list = ConvertToConsume(cursor);
@@ -214,7 +223,7 @@ public class DBAdopter implements Serializable {
      * @return
      */
     public float consume_getMoneyForMonth(String userid,String year_month,String flage){
-        Cursor cursor=db.query(CONSUME_TABLE,new String[]{CONSUME_ID,CONSUME_USER_ID,CONSUME_MOENY,CONSUME_COMMENT,CONSUME_FLAGE,CONSUME_TIME},CONSUME_USER_ID +" like ? and "+CONSUME_FLAGE+" like ?  and "+CONSUME_TIME+" like ?",new String[]{userid,flage,year_month+"%"} ,null,null,null,null);
+        Cursor cursor=db.query(CONSUME_TABLE,new String[]{CONSUME_ID,CONSUME_USER_ID,CONSUME_MOENY,CONSUME_COMMENT,CONSUME_FLAGE,CONSUME_TYPE,CONSUME_TIME},CONSUME_USER_ID +" like ? and "+CONSUME_FLAGE+" like ?  and "+CONSUME_TIME+" like ?",new String[]{userid,flage,year_month+"%"} ,null,null,null,null);
         if(cursor.getCount()==0||!cursor.moveToFirst())
             return 0;
         ArrayList<Consume> list = ConvertToConsume(cursor);
@@ -225,19 +234,39 @@ public class DBAdopter implements Serializable {
         return money;
     }
     public ArrayList<Consume> getConsumes(String userid){//查找
-        Cursor cursor=db.query(CONSUME_TABLE,new String[]{CONSUME_ID,CONSUME_USER_ID,CONSUME_MOENY,CONSUME_COMMENT,CONSUME_FLAGE,CONSUME_TIME},CONSUME_USER_ID +" like ? ",new String[]{userid} ,null,null,null,null);
+        Cursor cursor=db.query(CONSUME_TABLE,new String[]{CONSUME_ID,CONSUME_USER_ID,CONSUME_MOENY,CONSUME_COMMENT,CONSUME_FLAGE,CONSUME_TYPE,CONSUME_TIME},CONSUME_USER_ID +" like ? ",new String[]{userid} ,null,null,null,null);
         if(cursor.getCount()==0||!cursor.moveToFirst())
             return null;
         return ConvertToConsume(cursor);
     }
 
+    public ArrayList<Consume> getConsumes(String userid,String startTime,String endTime){//查找
+      //  Cursor cursor=db.query(CONSUME_TABLE,new String[]{CONSUME_ID,CONSUME_USER_ID,CONSUME_MOENY,CONSUME_COMMENT,CONSUME_FLAGE,CONSUME_TYPE,CONSUME_TIME},CONSUME_USER_ID +" like ? and datetime("+CONSUME_TIME+") >= datetime(?) and datetime("+CONSUME_TIME+") <= datetime(?) "  ,new String[]{userid,startTime,endTime} ,null,null,null,null);
+        long startLong =0L;
+        long endLong =0L;
+        try {
+            SimpleDateFormat sddd = new SimpleDateFormat("yyyy-MM-dd");
+            startLong= sddd.parse(startTime).getTime();
+            endLong= sddd.parse(endTime).getTime();
+            endLong+=24*60*60*1000;
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Cursor cursor=db.query(CONSUME_TABLE,new String[]{CONSUME_ID,CONSUME_USER_ID,CONSUME_MOENY,CONSUME_COMMENT,CONSUME_FLAGE,CONSUME_TYPE,CONSUME_TIME},CONSUME_USER_ID +" like ? and  "+CONSUME_TIME_LONG + " >= ? and  "+CONSUME_TIME_LONG + " <= ? "  ,new String[]{userid,""+startLong,endLong+""} ,null,null,null,null);
+
+        if(cursor.getCount()==0||!cursor.moveToFirst()) {
+            System.out.print("查询为null...........");
+            return null;
+        }
+        return ConvertToConsume(cursor);
+    }
     private static class DBOpenHelper extends SQLiteOpenHelper {//内部类，辅助类
         //方便管理数据库的创建，版本升级，打开等
         private static final String USER_CREATE = "create table " +
                 USER_TABLE + " ( " + USER_ID + " integer primary key autoincrement," + USER_USERNAME + " varchar(20),"+ USER_PASSWORD +" varchar(20))";
 
         private static final String CONSUME_CREATE="create table " +
-                CONSUME_TABLE + " ( " + CONSUME_ID + " integer primary key autoincrement,"+ CONSUME_USER_ID + " integer," + CONSUME_MOENY + " varchar(20)," + CONSUME_COMMENT + " varchar(20),"+CONSUME_FLAGE+" integer ,"+CONSUME_TIME+" varchar(20))";
+                CONSUME_TABLE + " ( " + CONSUME_ID + " integer primary key autoincrement,"+ CONSUME_USER_ID + " integer," + CONSUME_MOENY + " varchar(20)," + CONSUME_COMMENT + " varchar(20),"+CONSUME_FLAGE+" integer ,"+ CONSUME_TYPE + " varchar(20),"+CONSUME_TIME+" DATETIME ,"+CONSUME_TIME_LONG+" long )";
 
         public DBOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
             super(context, name, factory, version);

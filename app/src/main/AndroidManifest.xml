@@ -22,7 +22,8 @@
         <activity android:name=".ListActivity" />
         <activity android:name=".EditActivity" />
         <activity android:name=".SetActivity" />
-        <activity android:name=".BiaoActivity"></activity>
+        <activity android:name=".BiaoActivity" />
+        <activity android:name=".YuanActivity"></activity>
     </application>
 
 </manifest>

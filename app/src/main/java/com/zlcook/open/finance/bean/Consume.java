@@ -11,8 +11,9 @@ public class Consume {
     private int id;
     private int user_id;//用户id
     private float money;  //钱
-    private String comment;  //备注
+    private String comment;
     private int flage;//1收入；0支出
+    private String type;//花销类型：衣、食、住、行、其它
     private  Date time;  //时间
 
     public Consume(int user_id,float money, String comment, int flage) {
@@ -20,6 +21,15 @@ public class Consume {
         this.money = money;
         this.comment = comment;
         this.flage = flage;
+        this.time =new Date();
+    }
+
+    public Consume(int user_id,float money, String comment, int flage,String type) {
+        this.user_id = user_id;
+        this.money = money;
+        this.comment = comment;
+        this.flage = flage;
+        this.type = type;
         this.time =new Date();
     }
 
@@ -76,5 +86,13 @@ public class Consume {
 
     public void setUser_id(int user_id) {
         this.user_id = user_id;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

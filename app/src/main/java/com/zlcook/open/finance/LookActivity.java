@@ -33,7 +33,7 @@ public class LookActivity extends AppCompatActivity {
     private Date time ;
     private static int id;
     private ConsumePresenter presenter;
-    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

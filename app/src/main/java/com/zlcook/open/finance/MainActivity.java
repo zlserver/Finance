@@ -50,7 +50,15 @@ public class MainActivity extends AppCompatActivity {
 
         finish();
     }
+    /**
+     * 消费报表按钮
+     * @param view
+     */
+    public void yuan(View view){
+        startActivity(new Intent(MainActivity.this, YuanActivity.class));
 
+        finish();
+    }
     /**
      * 设置按钮
      * @param view

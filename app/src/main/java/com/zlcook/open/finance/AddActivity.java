@@ -5,7 +5,9 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 import com.zlcook.open.finance.bean.Consume;
 import com.zlcook.open.finance.db.DBAdopter;
@@ -19,15 +21,27 @@ public class AddActivity extends AppCompatActivity {
     private EditText et_comment;
     private ConsumePresenter presenter;
     private int flage = 0;//默认支出
-
+    private Spinner spinner;
+    private String type ;//类型
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add);
         et_money = (EditText) findViewById(R.id.et_money);
         et_comment = (EditText) findViewById(R.id.et_comment);
-
+        spinner = (Spinner)findViewById(R.id.sp_type);
         presenter = new ConsumePresenter(this);
+
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view,
+                                       int position, long id) {
+                //拿到被选择项的值
+                type = (String) spinner.getSelectedItem();
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {  }
+        });
     }
 
     /**
@@ -60,7 +74,8 @@ public class AddActivity extends AppCompatActivity {
             else {
                 // 将收支信息保存到数据库
                 Float f_money= Float.parseFloat(money);
-                Consume consume = new Consume(DBAdopter.USER.getId(),f_money,comment,flage);
+                type = (String) spinner.getSelectedItem();
+                Consume consume = new Consume(DBAdopter.USER.getId(),f_money,comment,flage,type);
                 if(presenter.add(consume)){
                     Toast.makeText(AddActivity.this, "添加成功", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(this, MainActivity.class);
