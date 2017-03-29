@@ -82,30 +82,19 @@ public class YuanActivity extends AppCompatActivity {
                 String type =con.getType();
                 if( type.equalsIgnoreCase("衣")){
                     if(con.getFlage()==0)//支出
-                        typeDatas[0]-=con.getMoney();
-                    else //收入
-                        typeDatas[0]+=con.getMoney();
-
+                        typeDatas[0]=con.getMoney();
                 }else if(type.equalsIgnoreCase("食")){
                     if(con.getFlage()==0)//支出
-                        typeDatas[1]-=con.getMoney();
-                    else //收入
-                        typeDatas[1]+=con.getMoney();
+                        typeDatas[1]=con.getMoney();
                 }else if(type.equalsIgnoreCase("住")){
                     if(con.getFlage()==0)//支出
-                        typeDatas[2]-=con.getMoney();
-                    else //收入
-                        typeDatas[2]+=con.getMoney();
+                        typeDatas[2]=con.getMoney();
                 }else if(type.equalsIgnoreCase("行")){
                     if(con.getFlage()==0)//支出
-                        typeDatas[3]-=con.getMoney();
-                    else //收入
-                        typeDatas[3]+=con.getMoney();
+                        typeDatas[3]=con.getMoney();
                 }else if(type.equalsIgnoreCase("其它")){
                     if(con.getFlage()==0)//支出
-                        typeDatas[4]-=con.getMoney();
-                    else //收入
-                        typeDatas[4]+=con.getMoney();
+                        typeDatas[4]=con.getMoney();
                 }
             }
         }
@@ -147,11 +136,11 @@ public class YuanActivity extends AppCompatActivity {
         pieChardata.setValues(values);//填充数据
         pieChardata.setCenterCircleColor(Color.WHITE);//设置环形中间的颜色
         pieChardata.setCenterCircleScale(0.5f);//设置环形的大小级别
-       // pieChardata.setCenterText1("饼图测试");//环形中间的文字1
+        pieChardata.setCenterText1("消费分类");//环形中间的文字1
         pieChardata.setCenterText1Color(Color.BLACK);//文字颜色
         pieChardata.setCenterText1FontSize(14);//文字大小
 
-        pieChardata.setCenterText2("消费分类");
+        //pieChardata.setCenterText2("消费分类");
         pieChardata.setCenterText2Color(Color.BLACK);
         pieChardata.setCenterText2FontSize(18);
         /**这里也可以自定义你的字体   Roboto-Italic.ttf这个就是你的字体库*/

@@ -7,6 +7,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,6 +25,8 @@ public class LookActivity extends AppCompatActivity {
     private TextView tv_comment;
     private TextView tv_time;
     private TextView tv_flage;
+    private TextView tv_type;
+    private LinearLayout line_type;
 
 
 
@@ -43,6 +46,8 @@ public class LookActivity extends AppCompatActivity {
         tv_time = (TextView) findViewById(R.id.time);
         tv_comment = (TextView) findViewById(R.id.comment);
         tv_flage =  (TextView) findViewById(R.id.flage);
+        line_type = (LinearLayout) findViewById(R.id.line_type);
+        tv_type = (TextView) findViewById(R.id.tv_type);
         presenter = new ConsumePresenter(this);
     }
 
@@ -62,6 +67,10 @@ public class LookActivity extends AppCompatActivity {
         tv_money.setText(money+"");
         tv_flage.setText(flage==0?"支出":"收入");
         tv_time.setText(sdf.format(time));
+        if( flage == 0){
+            line_type.setVisibility(View.VISIBLE);
+            tv_type.setText(consume.getType());
+        }
     }
 
     /**

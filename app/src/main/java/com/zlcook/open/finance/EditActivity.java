@@ -4,8 +4,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.zlcook.open.finance.bean.Consume;
@@ -23,9 +26,12 @@ public class EditActivity extends AppCompatActivity {
     private ConsumePresenter presenter;
     private RadioButton rb_flage_0,rb_flage_1;
 
+    private Spinner spinner;
+    private LinearLayout ll_type;
     private int flage = 0;//默认支出
     private int id;
     private Consume consume;
+    private String type="收入" ;//类型
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,8 +40,21 @@ public class EditActivity extends AppCompatActivity {
         et_comment = (EditText) findViewById(R.id.et_comment);
         rb_flage_0 =(RadioButton) findViewById(R.id.rb_flage_0);
         rb_flage_1 =(RadioButton) findViewById(R.id.rb_flage_1);
+        ll_type = (LinearLayout) findViewById(R.id.ll_type);
 
+        spinner = (Spinner)findViewById(R.id.sp_type);
         presenter = new ConsumePresenter(this);
+
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view,
+                                       int position, long id) {
+                //拿到被选择项的值
+                type = (String) spinner.getSelectedItem();
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {  }
+        });
     }
     public void onStart() {
         super.onStart();
@@ -45,17 +64,21 @@ public class EditActivity extends AppCompatActivity {
         flage =consume.getFlage();
         et_comment.setText(consume.getComment());
         et_money.setText(consume.getMoney()+"");
-        if( flage ==0)
+        if( flage ==0) {
+            ll_type.setVisibility(View.VISIBLE);
             rb_flage_0.setChecked(true);
-        else
+        } else {
+            ll_type.setVisibility(View.GONE);
             rb_flage_1.setChecked(true);
+        }
     }
     public  void zhichu(View v){
         flage = 0;
+        ll_type.setVisibility(View.VISIBLE);
     }
-
     public  void shouru(View v){
         flage = 1;
+        ll_type.setVisibility(View.GONE);
     }
 
     public void sure(View v) {
@@ -69,6 +92,7 @@ public class EditActivity extends AppCompatActivity {
                 consume.setComment(comment);
                 consume.setMoney(f_money);
                 consume.setFlage(flage);
+                consume.setType(type);
                 if(presenter.updateConsume(consume)){
                     Toast.makeText(EditActivity.this, "修改成功", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(this, ListActivity.class);

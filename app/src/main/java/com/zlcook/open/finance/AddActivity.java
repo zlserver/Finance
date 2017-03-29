@@ -7,6 +7,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 import com.zlcook.open.finance.bean.Consume;
@@ -20,9 +21,10 @@ public class AddActivity extends AppCompatActivity {
     private EditText et_money;
     private EditText et_comment;
     private ConsumePresenter presenter;
+    private LinearLayout ll_type;
     private int flage = 0;//默认支出
     private Spinner spinner;
-    private String type ;//类型
+    private String type="收入" ;//类型
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,6 +32,7 @@ public class AddActivity extends AppCompatActivity {
         et_money = (EditText) findViewById(R.id.et_money);
         et_comment = (EditText) findViewById(R.id.et_comment);
         spinner = (Spinner)findViewById(R.id.sp_type);
+        ll_type = (LinearLayout) findViewById(R.id.ll_type);
         presenter = new ConsumePresenter(this);
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -50,6 +53,7 @@ public class AddActivity extends AppCompatActivity {
      */
     public  void zhichu(View v){
         flage = 0;
+        ll_type.setVisibility(View.VISIBLE);
     }
 
     /**
@@ -58,6 +62,7 @@ public class AddActivity extends AppCompatActivity {
      */
     public  void shouru(View v){
         flage = 1;
+        ll_type.setVisibility(View.GONE);
     }
 
     /**
@@ -69,12 +74,13 @@ public class AddActivity extends AppCompatActivity {
         String money = et_money.getText().toString().trim();
         String comment = et_comment.getText().toString().trim();
         try{
-            if (money.equals("") || comment.equals(""))//填写错误则提示
+            if (money.equals("") )//填写错误则提示
                 Toast.makeText(AddActivity.this, "请填写完整", Toast.LENGTH_SHORT).show();
             else {
                 // 将收支信息保存到数据库
                 Float f_money= Float.parseFloat(money);
-                type = (String) spinner.getSelectedItem();
+                if( flage == 0)
+                   type = (String) spinner.getSelectedItem();
                 Consume consume = new Consume(DBAdopter.USER.getId(),f_money,comment,flage,type);
                 if(presenter.add(consume)){
                     Toast.makeText(AddActivity.this, "添加成功", Toast.LENGTH_SHORT).show();
