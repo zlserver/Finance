@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.zlcook.open.finance.db.DBAdopter;
 import com.zlcook.open.finance.presenter.ConsumePresenter;
@@ -195,11 +196,15 @@ public class BiaoActivity extends AppCompatActivity {
     }
 
 
+
     //监听返回菜单退出事件
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
-        finish();
-        return false;
+        if (keyCode == KeyEvent.KEYCODE_BACK ) {
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+            finish();
+            return false;
+        }
+       return true;
     }
 }

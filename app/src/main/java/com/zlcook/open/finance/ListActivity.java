@@ -192,12 +192,16 @@ public class ListActivity extends AppCompatActivity  {
         String time= sb.toString();
         return time;
     }
-    //监听返回菜单键退出事件
+
+    //监听返回菜单退出事件
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
-        finish();
-        return false;
+        if (keyCode == KeyEvent.KEYCODE_BACK ) {
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+            finish();
+            return false;
+        }
+        return true;
     }
 
 }

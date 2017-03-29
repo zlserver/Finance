@@ -107,12 +107,16 @@ public class LookActivity extends AppCompatActivity {
         startActivity(intent);
         finish();
     }
+
     //监听返回菜单退出事件
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        Intent intent = new Intent(this, ListActivity.class);
-        startActivity(intent);
-        finish();
-        return false;
+        if (keyCode == KeyEvent.KEYCODE_BACK ) {
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+            finish();
+            return false;
+        }
+        return true;
     }
     /**
      * 点击编辑按钮
